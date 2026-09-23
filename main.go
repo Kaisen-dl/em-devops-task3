@@ -30,7 +30,11 @@ func main() {
 		log.Error("redis connect failed", slog.String("err", err.Error()))
 		return
 	}
-	defer rdb.Close()
+	defer func() {
+		if err := rdb.Close(); err != nil {
+			log.Error("redis close failed", slog.String("err", err.Error()))
+		}
+	}()
 
 	h := handlers.New(pg, rdb)
 
